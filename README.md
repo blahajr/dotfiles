@@ -1,8 +1,25 @@
-# dotfiles
-my dotfiles for windows/linux
+\# dotfiles
 
+My Windows dotfiles
 
+---
 
-obs needs to run `script.ps1` before its usable & may need to edit some obs options for it to work
+## OBS Setup
 
-default obs is located at 
+Run this before starting OBS to set user for file locations:
+
+\`\`\`powershell
+script.ps1
+\`\`\`
+
+OBS config location:
+\`\`\`
+C:\\Users\\<YourUsername>\\AppData\\Roaming\\obs-studio
+\`\`\`
+
+Requires:
+https://github.com/univrsal/input-overlay
+
+Used for keyboard/mouse display in the obs scene.
+
+mainly used for recording/replay buffer
