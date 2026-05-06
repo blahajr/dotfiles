@@ -1,4 +1,4 @@
-\# dotfiles
+# dotfiles
 
 My Windows dotfiles
 
@@ -8,14 +8,11 @@ My Windows dotfiles
 
 Run this before starting OBS to set user for file locations:
 
-\`\`\`powershell
-script.ps1
-\`\`\`
+```script.ps1```
+
 
 OBS config location:
-\`\`\`
-C:\\Users\\<YourUsername>\\AppData\\Roaming\\obs-studio
-\`\`\`
+```C:\\Users\\<YourUsername>\\AppData\\Roaming\\obs-studio```
 
 Requires:
 https://github.com/univrsal/input-overlay
