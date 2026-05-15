@@ -1,7 +1,7 @@
 return {
     {
         label = "Pwsh",
-        cwd = "C:/Users/ryan",
+        cwd = (os.getenv("USERPROFILE") or ""):gsub("\\", "/"),
         args = { "pwsh.exe", "-NoLogo" },
     },
     {

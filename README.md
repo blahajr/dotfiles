@@ -19,4 +19,4 @@ https://github.com/univrsal/input-overlay
 
 Used for keyboard/mouse display in the obs scene.
 
-mainly used for recording/replay buffer
+mainly used for recording/replay buffer 

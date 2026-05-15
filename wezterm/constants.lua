@@ -1,7 +1,5 @@
 local M = {}
 
-M.bg_image = os.getenv("USERPROFILE") .. "\\.config\\assets\\bg-blurred-darker.png"
-
 M.font = "JetBrainsMono Nerd Font Mono"
 M.font_size = 18
 M.line_height = 1.2
