@@ -1,11 +1,12 @@
 local constants = require("constants")
+local gpu_adapters = require("utils.gpu-adapter")
 
 local SCHEME_NAME = "Catppuccin Mocha"
 
 local M = {}
 
 function M.apply(config)
-   
+
     config.color_schemes = config.color_schemes or {}
     local base = {}
     for k, v in pairs(require("colors.custom")) do
@@ -33,6 +34,13 @@ function M.apply(config)
     }
     config.window_close_confirmation = "NeverPrompt"
     config.max_fps = 120
+
+    -- GPU / renderer (see github.com/KevinSilvester/wezterm-config config/appearance.lua)
+    config.front_end = "WebGpu"
+    config.webgpu_power_preference = "HighPerformance"
+    config.webgpu_preferred_adapter = gpu_adapters:pick_best()
+    -- config.webgpu_preferred_adapter = gpu_adapters:pick_manual("Dx12", "DiscreteGpu")
+    -- config.webgpu_preferred_adapter = gpu_adapters:pick_manual("Gl", "Other")
 end
 
 function M.apply_window(window, opts)
