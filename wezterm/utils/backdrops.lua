@@ -85,7 +85,13 @@ function BackDrops:_gen_opts()
         if type(path) == "string" and path ~= "" then
             table.insert(bg_opts, {
                 source = { File = path },
+                attachment = "Fixed",
+                width = "Cover",
+                height = "Cover",
                 horizontal_align = "Center",
+                vertical_align = "Middle",
+                repeat_x = "NoRepeat",
+                repeat_y = "NoRepeat",
                 hsb = BACKDROP_IMAGE_HSB,
             })
         end

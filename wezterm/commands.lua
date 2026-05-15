@@ -17,6 +17,12 @@ function M.apply(config)
     config.keys = config.keys or {}
 
     table.insert(config.keys, {
+        key = "q",
+        mods = "CTRL",
+        action = act.QuitApplication,
+    })
+
+    table.insert(config.keys, {
         key = "T",
         mods = "CTRL|SHIFT",
         action = wezterm.action_callback(function(win, pane)

@@ -15,11 +15,12 @@ function M.apply(config)
     config.window_padding = {
         right = 0,
         top = 0,
-        bottom = 5.0,
+        bottom = 3.0,
     }
     config.window_frame = {
         active_titlebar_bg = "#090909",
     }
+    config.window_close_confirmation = "NeverPrompt"
     config.max_fps = 120
 end
 
