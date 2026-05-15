@@ -22,23 +22,35 @@ wezterm.on("gui-startup", function(cmd)
         w:gui_window():set_inner_size(1400, 800)
     end
 
+    ---@param s { cwd?: string, args?: string[], label?: string }
+    local function spawn_opts(s)
+        local opts = {}
+        if s.cwd and s.cwd ~= "" then
+            opts.cwd = s.cwd
+        end
+        if s.args and #s.args > 0 then
+            opts.args = s.args
+        end
+        return opts
+    end
+
     if #sessions > 0 then
         local first = sessions[1]
 
-        local _, _, w = wezterm.mux.spawn_window({
-            cwd = first.cwd,
-            args = first.args,
-        })
+        local first_tab, _, w = wezterm.mux.spawn_window(spawn_opts(first))
+        if first.label then
+            first_tab:set_title(first.label)
+        end
 
         window = w
         size_gui(window)
 
         for i = 2, #sessions do
             local s = sessions[i]
-            window:spawn_tab({
-                cwd = s.cwd,
-                args = s.args,
-            })
+            local tab = window:spawn_tab(spawn_opts(s))
+            if tab and s.label then
+                tab:set_title(s.label)
+            end
         end
     else
         local _, _, w = wezterm.mux.spawn_window(cmd or {})

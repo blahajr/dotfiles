@@ -1,9 +1,20 @@
 local constants = require("constants")
 
+local SCHEME_NAME = "Catppuccin Mocha"
+
 local M = {}
 
 function M.apply(config)
-    config.colors = constants.colors
+   
+    config.color_schemes = config.color_schemes or {}
+    local base = {}
+    for k, v in pairs(require("colors.custom")) do
+        base[k] = v
+    end
+    config.color_schemes[SCHEME_NAME] = base
+    config.color_scheme = SCHEME_NAME
+
+    config.colors = constants.colors or {}
 
     config.font = require("wezterm").font(constants.font)
     config.font_size = constants.font_size

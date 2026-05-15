@@ -1,12 +1,20 @@
+
+-- label = tab title overrides 
+
+local function home()
+    return (os.getenv("USERPROFILE") or ""):gsub("\\", "/")
+end
+
+
 return {
     {
-        label = "Pwsh",
-        cwd = (os.getenv("USERPROFILE") or ""):gsub("\\", "/"),
-        args = { "pwsh.exe", "-NoLogo" },
+        label = "1",
+        cwd = home(),
     },
     {
-        label = "Logs",
-        cwd = "C:/",
-        args = { "pwsh.exe", "-NoLogo" },
+        label = "2",
+        cwd = home(),
+       
     }
+    
 }
