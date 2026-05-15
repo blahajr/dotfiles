@@ -11,10 +11,15 @@ end
 
 local BACKDROP_TINT = backdrop_tint_color()
 
--- Lower = wallpaper shows through more  raise if text becomes hard to read.
-local BACKDROP_TINT_OPACITY = 0.95
+local BACKDROP_TINT_OPACITY_SMALL = 0.93
+local BACKDROP_TINT_OPACITY_LARGE = 0.96
+local LARGE_WINDOW_MIN_PIXEL_WIDTH = 1600
+
+local DEFAULT_WINDOW_PIXEL_WIDTH_FOR_CONFIG = 1400
+local DEFAULT_WINDOW_PIXEL_HEIGHT_FOR_CONFIG = 800
 
 local BACKDROP_IMAGE_HSB = { brightness = 1.1 }
+
 
 ---- Taken from https://github.com/KevinSilvester/wezterm-config/blob/master/utils/backdrops.lua
 -- Seeding random numbers before generating for use
@@ -74,10 +79,11 @@ function BackDrops:scan_images_dir()
     return self
 end
 
----Create the `background` options with the current image
+---@param tint_opacity number|nil overlay opacity; nil → small-window preset
 ---@private
 ---@return BackgroundLayer[]
-function BackDrops:_gen_opts()
+function BackDrops:_gen_opts(tint_opacity)
+    local opacity = tint_opacity or BACKDROP_TINT_OPACITY_SMALL
     local bg_opts = {}
 
     if #self.images > 0 then
@@ -103,10 +109,49 @@ function BackDrops:_gen_opts()
         width = "120%",
         vertical_offset = "-10%",
         horizontal_offset = "-10%",
-        opacity = BACKDROP_TINT_OPACITY,
+        opacity = opacity,
     })
 
     return bg_opts
+end
+
+---Tint depth from pixel size (width breakpoint).
+---@param pixel_width number?
+---@param pixel_height number?
+---@return number
+function BackDrops:tint_opacity_for_pixels(pixel_width, pixel_height)
+    _ = pixel_height
+    if pixel_width and pixel_width >= LARGE_WINDOW_MIN_PIXEL_WIDTH then
+        return BACKDROP_TINT_OPACITY_LARGE
+    end
+    return BACKDROP_TINT_OPACITY_SMALL
+end
+
+---@param window Window?
+---@return number
+function BackDrops:tint_opacity_for_window(window)
+    if not window then
+        return BACKDROP_TINT_OPACITY_SMALL
+    end
+    local dims = window:get_dimensions()
+    if not dims then
+        return BACKDROP_TINT_OPACITY_SMALL
+    end
+    return self:tint_opacity_for_pixels(dims.pixel_width, dims.pixel_height)
+end
+
+---Apply tint tier for current window size (focus/image mode only when wallpaper visible).
+---@param window Window
+function BackDrops:sync_backdrop_tint_for_window(window)
+    if self.no_img then
+        return
+    end
+    local dims = window:get_dimensions()
+    if not dims then
+        return
+    end
+    local tint = self:tint_opacity_for_pixels(dims.pixel_width, dims.pixel_height)
+    self:_set_opt(window, self:_gen_opts(tint))
 end
 
 ---Create the `background` options for focus mode
@@ -136,7 +181,9 @@ function BackDrops:initial_options(opts)
         return self:_gen_no_img_opts()
     end
 
-    return self:_gen_opts()
+    return self:_gen_opts(
+        self:tint_opacity_for_pixels(DEFAULT_WINDOW_PIXEL_WIDTH_FOR_CONFIG, DEFAULT_WINDOW_PIXEL_HEIGHT_FOR_CONFIG)
+    )
 end
 
 ---Override the current window options for background
@@ -173,7 +220,7 @@ function BackDrops:random(window)
     self.current_idx = math.random(#self.images)
 
     if window ~= nil then
-        self:_set_opt(window, self:_gen_opts())
+        self:_set_opt(window, self:_gen_opts(self:tint_opacity_for_window(window)))
     end
 end
 
@@ -188,7 +235,7 @@ function BackDrops:cycle_forward(window)
     else
         self.current_idx = self.current_idx + 1
     end
-    self:_set_opt(window, self:_gen_opts())
+    self:_set_opt(window, self:_gen_opts(self:tint_opacity_for_window(window)))
 end
 
 ---Cycle the loaded `files` and select the previous background
@@ -202,7 +249,7 @@ function BackDrops:cycle_back(window)
     else
         self.current_idx = self.current_idx - 1
     end
-    self:_set_opt(window, self:_gen_opts())
+    self:_set_opt(window, self:_gen_opts(self:tint_opacity_for_window(window)))
 end
 
 ---Set a specific background from the `files` array
@@ -215,16 +262,23 @@ function BackDrops:set_img(window, idx)
     end
 
     self.current_idx = idx
-    self:_set_opt(window, self:_gen_opts())
+    self:_set_opt(window, self:_gen_opts(self:tint_opacity_for_window(window)))
 end
 
 ---Toggle the focus mode
 ---@param window Window WezTerm `Window` see: https://wezfurlong.org/wezterm/config/lua/window/index.html
 function BackDrops:toggle_focus(window)
-    local background_opts = self.no_img and self:_gen_opts() or self:_gen_no_img_opts()
+    local background_opts = self.no_img and self:_gen_opts(self:tint_opacity_for_window(window))
+        or self:_gen_no_img_opts()
     self.no_img = not self.no_img
 
     self:_set_opt(window, background_opts)
 end
 
-return BackDrops:init()
+local backdrops = BackDrops:init()
+
+wezterm.on("window-resized", function(window, _pane)
+    backdrops:sync_backdrop_tint_for_window(window)
+end)
+
+return backdrops

@@ -52,10 +52,13 @@ wezterm.on("gui-startup", function(cmd)
                 tab:set_title(s.label)
             end
         end
+
+        backdrops:sync_backdrop_tint_for_window(window:gui_window())
     else
         local _, _, w = wezterm.mux.spawn_window(cmd or {})
         window = w
         size_gui(window)
+        backdrops:sync_backdrop_tint_for_window(window:gui_window())
     end
 end)
 

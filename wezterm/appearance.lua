@@ -1,3 +1,4 @@
+local wezterm = require("wezterm")
 local constants = require("constants")
 local gpu_adapters = require("utils.gpu-adapter")
 
@@ -17,7 +18,7 @@ function M.apply(config)
 
     config.colors = constants.colors or {}
 
-    config.font = require("wezterm").font(constants.font)
+    config.font = wezterm.font(constants.font)
     config.font_size = constants.font_size
     config.line_height = constants.line_height
 
@@ -27,7 +28,7 @@ function M.apply(config)
     config.window_padding = {
         right = 0,
         top = 0,
-        bottom = 3.0,
+        bottom = 2.3,
     }
     config.window_frame = {
         active_titlebar_bg = "#090909",
@@ -35,11 +36,13 @@ function M.apply(config)
     config.window_close_confirmation = "NeverPrompt"
     config.max_fps = 120
 
+    config.hyperlink_rules = wezterm.default_hyperlink_rules()
+
     -- GPU / renderer (see github.com/KevinSilvester/wezterm-config config/appearance.lua)
     config.front_end = "WebGpu"
     config.webgpu_power_preference = "HighPerformance"
     config.webgpu_preferred_adapter = gpu_adapters:pick_best()
-    -- config.webgpu_preferred_adapter = gpu_adapters:pick_manual("Dx12", "DiscreteGpu")
+    -- config.webgpu_preferred_adapter = gpu_adapters:pick_manual("Dx12", "DiscreteGpu") 
     -- config.webgpu_preferred_adapter = gpu_adapters:pick_manual("Gl", "Other")
 end
 
