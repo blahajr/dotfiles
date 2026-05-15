@@ -7,19 +7,25 @@ require("commands").apply(config)
 
 
 wezterm.on("gui-startup", function(cmd)
-    local tab, pane, window = wezterm.mux.spawn_window(cmd or {})
-
-    window:gui_window():set_inner_size(1400, 800)
-
-    for i, session in ipairs(sessions) do
-        local t = window:spawn_tab({
-            cwd = session.cwd,
-            args = session.args,
+    if #sessions > 0 then
+        local first = sessions[1]
+        local tab, pane, window = wezterm.mux.spawn_window({
+            cwd = first.cwd,
+            args = first.args,
         })
 
-        if i == 1 then
-            tab = t
+        window:gui_window():set_inner_size(1400, 800)
+
+        for i = 2, #sessions do
+            local session = sessions[i]
+            window:spawn_tab({
+                cwd = session.cwd,
+                args = session.args,
+            })
         end
+    else
+        local tab, pane, window = wezterm.mux.spawn_window(cmd or {})
+        window:gui_window():set_inner_size(1400, 800)
     end
 end)
 
