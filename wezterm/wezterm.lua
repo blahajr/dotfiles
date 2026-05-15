@@ -5,8 +5,11 @@ local sessions = require("sessions.default")
 
 require("commands").apply(config)
 
+
 wezterm.on("gui-startup", function(cmd)
     local tab, pane, window = wezterm.mux.spawn_window(cmd or {})
+
+    window:gui_window():set_inner_size(1400, 800)
 
     for i, session in ipairs(sessions) do
         local t = window:spawn_tab({
