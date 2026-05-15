@@ -66,18 +66,31 @@ function M.apply(config)
     table.insert(config.keys, {
         key = "/",
         mods = SUPER_REV,
-        action = act.InputSelector({
-            title = "Select background",
-            choices = backdrops:choices(),
-            fuzzy = true,
-            fuzzy_description = "Background: ",
-            action = wezterm.action_callback(function(window, _pane, idx)
-                if not idx then
-                    return
-                end
-                backdrops:set_img(window, tonumber(idx))
-            end),
-        }),
+        action = wezterm.action_callback(function(window, pane)
+            local choices = backdrops:choices()
+            if #choices == 0 then
+                window:toast_notification("WezTerm", "No images in backdrops folder", nil, 4000)
+                return
+            end
+            window:perform_action(
+                act.InputSelector({
+                    title = "Select background",
+                    choices = choices,
+                    fuzzy = true,
+                    fuzzy_description = "Background: ",
+                    action = wezterm.action_callback(function(win, _pane, id, _label)
+                        if not id and not _label then
+                            return
+                        end
+                        local n = tonumber(id)
+                        if n then
+                            backdrops:set_img(win, n)
+                        end
+                    end),
+                }),
+                pane
+            )
+        end),
     })
     table.insert(config.keys, {
         key = "b",
